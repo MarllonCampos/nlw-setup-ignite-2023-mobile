@@ -8,7 +8,7 @@ import { useNavigation } from "@react-navigation/native";
 
 const weekDays = ["D", "S", "T", "Q", "Q", "S", "S"];
 const datesFromYearStart = generateRangeDatesFromYearStart();
-const minimumSummaryDatesSizes = 18 * 5;
+const minimumSummaryDatesSizes = 18 * 3;
 const amountOfDaysToFill = minimumSummaryDatesSizes - datesFromYearStart.length;
 
 export const Home = () => {
