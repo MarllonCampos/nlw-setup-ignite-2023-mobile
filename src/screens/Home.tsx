@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Text, View, ScrollView, Alert } from "react-native";
 import { generateRangeDatesFromYearStart } from "../utils/generate-range-between-dates";
 
 import { HabitDay, DAY_SIZE } from "../components/HabitDay";
 import { Header } from "../components/Header";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { api } from "../lib/axios";
 import { Loading } from "../components/Loading";
 import dayjs from "dayjs";
 
 const weekDays = ["D", "S", "T", "Q", "Q", "S", "S"];
 const datesFromYearStart = generateRangeDatesFromYearStart();
-const minimumSummaryDatesSizes = 18 * 3;
+const minimumSummaryDatesSizes = 18 * 5;
 const amountOfDaysToFill = minimumSummaryDatesSizes - datesFromYearStart.length;
 interface Summary {
   id: string;
@@ -27,7 +27,6 @@ export const Home = () => {
     try {
       setLoading(true);
       const response = await api.get("/summary");
-      console.log(response.data);
       setSummary(response.data);
     } catch (error) {
       console.log(error);
@@ -36,9 +35,11 @@ export const Home = () => {
       setLoading(false);
     }
   }
-  useEffect(() => {
-    fetchData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [])
+  );
 
   if (loading) {
     return <Loading />;
@@ -59,13 +60,13 @@ export const Home = () => {
         ))}
       </View>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 30 }}>
-        {summary && (
+        {summary.length > 0 && (
           <View className="flex-row flex-wrap">
             {datesFromYearStart.map((date) => {
               const dayWithHabits = summary.find((day) => dayjs(date).isSame(day.date, "day"));
               return (
                 <HabitDay
-                  key={date.toISOString()}
+                  key={date.toString()}
                   date={date}
                   amountOfHabits={dayWithHabits?.amount}
                   amountCompleted={dayWithHabits?.completed}
